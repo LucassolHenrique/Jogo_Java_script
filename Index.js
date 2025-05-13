@@ -18,7 +18,7 @@ c.fillRect(0, 0, canvas.width, canvas.height); //cria um retangulo preenchido
 
 //orientação Objeto daqui para baixo
 
-const gravity = 0.7
+const gravity = 1.4
 
 class Sprite {
     constructor({position, velocity, color = 'red', offset}) {
@@ -162,11 +162,17 @@ function decreaseTimer() {
         document.querySelector('#timer').innerHTML = timer
     }
 
-    if (player.health == enemy.health) {
-        console.log('tie');
+    if (timer === 0) {
+        document.querySelector('#displayText').style.display = 'flex'
 
+        if (player.health == enemy.health) {
+            document.querySelector('#displayText').innerHTML = 'Tie'
+        } else if (player.health > enemy.health) {
+            document.querySelector('#displayText').innerHTML = 'Player 1 wins'
+        } else if (player.health < enemy.health) {
+            document.querySelector('#displayText').innerHTML = 'Player 2 wins'
+        }
     }
-
 }
 decreaseTimer()
 
