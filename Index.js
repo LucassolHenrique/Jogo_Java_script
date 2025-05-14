@@ -21,7 +21,7 @@ c.fillRect(0, 0, canvas.width, canvas.height); //cria um retangulo preenchido
 const gravity = 1.4
 
 class Sprite {
-    constructor({position, velocity, color = 'red', offset}) {
+    constructor({ position, velocity, color = 'red', offset }) {
         this.position = position
         this.velocity = velocity
         this.width = 50
@@ -29,7 +29,7 @@ class Sprite {
         this.lastKey
         this.attackBox = {
             position: {
-                x: this.position.x, 
+                x: this.position.x,
                 y: this.position.y
             },
             offset: offset,
@@ -45,17 +45,17 @@ class Sprite {
         c.fillStyle = this.color
 
         c.fillRect(this.position.x, this.position.y, this.width, this.height) //tamanho e lugar do player
-        
+
         //ataque do boneco
         if (this.isAttacking) {
-        c.fillStyle = 'green'
-        c.fillRect(
-            this.attackBox.position.x, 
-            this.attackBox.position.y,
-            this.attackBox.width,
-            this.attackBox.height)
+            c.fillStyle = 'green'
+            c.fillRect(
+                this.attackBox.position.x,
+                this.attackBox.position.y,
+                this.attackBox.width,
+                this.attackBox.height)
+        }
     }
-}
 
     update() { //atualizando o player que dermos o comando (para poder andar no w a s d)
         this.draw()
@@ -65,8 +65,8 @@ class Sprite {
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y
 
-        if (this.position.y + this.height + this.velocity.y >= canvas.height){
-            this.velocity.y  = 0 //chão se colocar 1 vai transforma em uma areia movediça
+        if (this.position.y + this.height + this.velocity.y >= canvas.height) {
+            this.velocity.y = 0 //chão se colocar 1 vai transforma em uma areia movediça
         } else this.velocity.y += gravity
     }
 
@@ -90,8 +90,8 @@ const player = new Sprite({
         y: 0
     },
     offset: {
-        x:0 ,
-        y:0
+        x: 0,
+        y: 0
 
     }
 })
@@ -109,11 +109,11 @@ const enemy = new Sprite({
     },
     //cor
     color: 'blue',
-    
+
     //ataque (-50 pra ser pro lado do inimigo)
     offset: {
-        x:-50 ,
-        y:0
+        x: -50,
+        y: 0
     }
 })
 
@@ -144,13 +144,24 @@ const keys = {
 function rectangularCollision({ rectangle1, rectangle2 }) {
     return (
         rectangle1.attackBox.position.x + rectangle1.attackBox.width >=
-         rectangle2.position.x &&
+        rectangle2.position.x &&
         rectangle1.attackBox.position.x <=
-         rectangle2.position.x + rectangle2.width && 
+        rectangle2.position.x + rectangle2.width &&
         rectangle1.attackBox.position.y + rectangle1.attackBox.height >=
-         rectangle2.position.y &&
-        rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height 
+        rectangle2.position.y &&
+        rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
     )
+}
+
+function determineWinner ({ player, enemy }) {
+            document.querySelector('#displayText').style.display = 'flex'
+    if (player.health == enemy.health) {
+        document.querySelector('#displayText').innerHTML = 'Tie'
+    } else if (player.health > enemy.health) {
+        document.querySelector('#displayText').innerHTML = 'Player 1 wins'
+    } else if (player.health < enemy.health) {
+        document.querySelector('#displayText').innerHTML = 'Player 2 wins'
+    }
 }
 
 // o timer que fica em cima 
@@ -163,15 +174,8 @@ function decreaseTimer() {
     }
 
     if (timer === 0) {
-        document.querySelector('#displayText').style.display = 'flex'
 
-        if (player.health == enemy.health) {
-            document.querySelector('#displayText').innerHTML = 'Tie'
-        } else if (player.health > enemy.health) {
-            document.querySelector('#displayText').innerHTML = 'Player 1 wins'
-        } else if (player.health < enemy.health) {
-            document.querySelector('#displayText').innerHTML = 'Player 2 wins'
-        }
+        determineWinner({player, enemy})
     }
 }
 decreaseTimer()
@@ -190,40 +194,43 @@ function animate() {
     //velocidade do player
     if (keys.a.pressed && player.lastKey === 'a') {
         player.velocity.x = -4
-    } else  if (keys.d.pressed && player.lastKey === 'd') {
+    } else if (keys.d.pressed && player.lastKey === 'd') {
         player.velocity.x = 4
     }
 
     //velocidade do inimigo enewy
     if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft') {
         enemy.velocity.x = -4
-    } else  if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
+    } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
         enemy.velocity.x = 4
     }
 
     //detect for collision
     if (
-        rectangularCollision ({
+        rectangularCollision({
             rectangle1: player,
             rectangle2: enemy
-        }) && 
+        }) &&
         player.isAttacking
-    )  {
+    ) {
         player.isAttacking = false //calculo de vida, 
         enemy.health -= 20
         document.querySelector('#vida_do_inimigo').style.width = enemy.health + '%'
     }
 
     if (
-        rectangularCollision ({
+        rectangularCollision({
             rectangle1: enemy,
             rectangle2: player
-        }) && 
+        }) &&
         enemy.isAttacking
-    )  {
+    ) {
         enemy.isAttacking = false
         player.health -= 20
         document.querySelector('#vida_do_player').style.width = player.health + '%'
+    }
+    if (Enumerator.health <= 0 || player.health <= 0) {
+        determineWinner({player, enemy})
     }
 }
 
@@ -272,7 +279,7 @@ window.addEventListener('keyup', (event) => {
         case 'a':
             keys.a.pressed = false
             break
-        }
+    }
 
     switch (event.key) {
         case 'ArrowRight':
