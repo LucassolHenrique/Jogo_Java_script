@@ -153,8 +153,9 @@ function rectangularCollision({ rectangle1, rectangle2 }) {
     )
 }
 
-function determineWinner ({ player, enemy }) {
-            document.querySelector('#displayText').style.display = 'flex'
+function determineWinner ({ player, enemy, timerId }) {
+    clearTimeout(timerId)
+    document.querySelector('#displayText').style.display = 'flex'
     if (player.health == enemy.health) {
         document.querySelector('#displayText').innerHTML = 'Tie'
     } else if (player.health > enemy.health) {
@@ -165,19 +166,20 @@ function determineWinner ({ player, enemy }) {
 }
 
 // o timer que fica em cima 
-let timer = 10
+let timer = 60
+let timerId
 function decreaseTimer() {
     if (timer > 0) {
-        setTimeout(decreaseTimer, 1000)
+        timerId = setTimeout(decreaseTimer, 1000)
         timer--
         document.querySelector('#timer').innerHTML = timer
     }
 
     if (timer === 0) {
-
-        determineWinner({player, enemy})
+        determineWinner({player, enemy, timerId})
     }
 }
+
 decreaseTimer()
 
 //animação
@@ -218,6 +220,10 @@ function animate() {
         document.querySelector('#vida_do_inimigo').style.width = enemy.health + '%'
     }
 
+    if (enemy.health <= 0 || player.health <= 0) {
+        determineWinner({player, enemy})
+    }
+
     if (
         rectangularCollision({
             rectangle1: enemy,
@@ -229,8 +235,8 @@ function animate() {
         player.health -= 20
         document.querySelector('#vida_do_player').style.width = player.health + '%'
     }
-    if (Enumerator.health <= 0 || player.health <= 0) {
-        determineWinner({player, enemy})
+    if (enemy.health <= 0 || player.health <= 0) {
+        determineWinner({player, enemy, timerId})
     }
 }
 
